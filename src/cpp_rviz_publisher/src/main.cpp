@@ -1,6 +1,7 @@
 #include <sstream>
 #include <ros/ros.h>
 #include <visualization_msgs/Marker.h>
+#include <std_msgs/Float32.h>
 
 visualization_msgs::Marker createCuteCube(float pose) {
 
@@ -41,12 +42,18 @@ int main(int argc, char **argv) {
     ros::NodeHandle n;
 
     ros::Publisher vis_pub = n.advertise<visualization_msgs::Marker>( "/cute_cube", 0 );
+    ros::Publisher scalar_pub = n.advertise<std_msgs::Float32>("/my_scalar",0);
+
     ros::Rate loop_rate(100);
 
     float pose = 0;
     while (ros::ok()) {
         visualization_msgs::Marker cube = createCuteCube(pose);
         vis_pub.publish( cube );
+	
+	auto scalar_msg = std_msgs::Float32();
+	scalar_msg.data = cube.pose.position.x;
+	scalar_pub.publish(scalar_msg);
         pose += 0.01;
 
         ros::spinOnce();
